@@ -12,7 +12,9 @@ pipeline {
         stage('Build + Unit + Integration Tests') {
             steps {
                 echo 'Maven build ve testler çalıştırılıyor...'
-                bat 'mvnw.cmd clean verify'
+                dir('Alisveris-Sitesi---backend-main') {
+                    bat 'mvnw.cmd clean verify'
+                }
             }
         }
     }
