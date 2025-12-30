@@ -1,5 +1,0 @@
-package com.example.AlisverisSitesi.business.abstracts;
-
-public interface CategoryService {
-
-}

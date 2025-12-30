@@ -1,5 +1,0 @@
-package com.example.AlisverisSitesi.core.dataAccess;
-
-public interface CategoryDao {
-
-}
