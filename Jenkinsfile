@@ -5,26 +5,24 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/fatmagul-yilmaz/YDG.git'
+                checkout scm
             }
         }
 
-        stage('Build with Maven Wrapper') {
+        stage('Build + Unit + Integration Tests') {
             steps {
-                dir('Alisveris-Sitesi---backend-main') {
-                    bat 'mvnw.cmd clean package -DskipTests'
-                }
+                echo 'Maven build ve testler çalıştırılıyor...'
+                bat 'mvnw.cmd clean verify'
             }
         }
     }
 
     post {
         success {
-            echo 'Maven build başarılı 🎉'
+            echo 'Build ve testler BAŞARILI ✅'
         }
         failure {
-            echo 'Maven build başarısız ❌'
+            echo 'Build veya testlerde HATA ❌'
         }
     }
 }
