@@ -1,0 +1,66 @@
+package com.example.AlisverisSitesi.business.concretes;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.example.AlisverisSitesi.dataAccess.abstracts.CategoryDao;
+import com.example.AlisverisSitesi.entities.concretes.Category;
+import com.example.AlisverisSitesi.core.utilities.results.DataResult;
+import com.example.AlisverisSitesi.core.utilities.results.Result;
+
+class CategoryManagerTest {
+
+    @Mock
+    private CategoryDao categoryDao;
+
+    @InjectMocks
+    private CategoryManager categoryManager;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    // ✅ ADD TEST
+    @Test
+    void add_shouldSaveCategory_andReturnSuccess() {
+        // arrange
+        Category category = new Category();
+        category.setCategoryName("Elektronik");
+
+        // act
+        Result result = categoryManager.add(category);
+
+        // assert
+        verify(categoryDao, times(1)).save(category);
+        assertTrue(result.isSuccess());
+        assertEquals("Kategori eklendi", result.getMessage());
+    }
+
+    // ✅ GET ALL TEST
+    @Test
+    void getAll_shouldReturnCategoryList() {
+        // arrange
+        Category c1 = new Category(1, "Elektronik");
+        Category c2 = new Category(2, "Giyim");
+
+        when(categoryDao.findAll()).thenReturn(Arrays.asList(c1, c2));
+
+        // act
+        DataResult<List<Category>> result = categoryManager.getAll();
+
+        // assert
+        assertTrue(result.isSuccess());
+        assertEquals(2, result.getData().size());
+        assertEquals("Elektronik", result.getData().get(0).getCategoryName());
+    }
+}

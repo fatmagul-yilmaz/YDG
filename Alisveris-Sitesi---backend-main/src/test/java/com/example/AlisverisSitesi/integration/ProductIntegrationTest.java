@@ -1,0 +1,39 @@
+package com.example.AlisverisSitesi.integration;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import com.example.AlisverisSitesi.business.concretes.ProductManager;
+import com.example.AlisverisSitesi.entities.concretes.Product;
+
+@SpringBootTest
+@ActiveProfiles("test")
+class ProductIntegrationTest {
+
+    @Autowired
+    private ProductManager productManager;
+
+    @Test
+    void shouldAddAndGetProductsFromDatabase() {
+
+        Product product = new Product();
+        product.setProductName("Telefon");
+        product.setUnitPrice(100);
+
+        productManager.add(product);
+
+        List<Product> products = productManager.getAll().getData();
+
+        assertNotNull(products);
+        assertTrue(products.size() > 0);
+        assertEquals("Telefon", products.get(0).getProductName());
+    }
+}

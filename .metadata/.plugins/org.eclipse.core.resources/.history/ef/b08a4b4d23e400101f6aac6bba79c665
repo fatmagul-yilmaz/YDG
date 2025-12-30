@@ -1,0 +1,5 @@
+package com.example.AlisverisSitesi.api.controllers;
+
+public class CategoriesController {
+
+}

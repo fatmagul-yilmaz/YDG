@@ -1,0 +1,57 @@
+package com.example.AlisverisSitesi.integration;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+import com.example.AlisverisSitesi.business.concretes.CategoryManager;
+import com.example.AlisverisSitesi.dataAccess.abstracts.CategoryDao;
+import com.example.AlisverisSitesi.dataAccess.abstracts.OrderDao;
+import com.example.AlisverisSitesi.dataAccess.abstracts.ProductDao;
+import com.example.AlisverisSitesi.entities.concretes.Category;
+
+@SpringBootTest
+@ActiveProfiles("test")
+class CategoryIntegrationTest {
+
+	@Autowired
+	private OrderDao orderDao;
+	
+	@Autowired
+    private ProductDao productDao;
+	
+    @Autowired
+    private CategoryManager categoryManager;
+
+    @Autowired
+    private CategoryDao categoryDao;
+
+    @BeforeEach
+    void setUp() {
+    	orderDao.deleteAll();
+		productDao.deleteAll(); // Önce bağımlı olanları sil
+		categoryDao.deleteAll(); // Sonra ana tabloyu sil
+    }
+
+    @Test
+    void shouldAddAndGetCategoriesFromDatabase() {
+
+        Category category = new Category();
+        category.setCategoryName("Elektronik");
+
+        categoryManager.add(category);
+
+        List<Category> categories = categoryManager.getAll().getData();
+
+        assertNotNull(categories);
+        assertEquals(1, categories.size());
+        assertEquals("Elektronik", categories.get(0).getCategoryName());
+    }
+}

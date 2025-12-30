@@ -1,0 +1,45 @@
+package com.example.AlisverisSitesi.business.concretes;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.example.AlisverisSitesi.dataAccess.abstracts.CategoryDao;
+import com.example.AlisverisSitesi.entities.concretes.Category;
+
+@ExtendWith(MockitoExtension.class)
+public class CategoryManagerTest {
+
+    @Mock
+    private CategoryDao categoryDao;
+
+    @InjectMocks
+    private CategoryManager categoryManager;
+
+    @Test
+    void getAll_shouldReturnCategoryList() {
+
+        var result = categoryManager.getAll();
+
+        verify(categoryDao).findAll();
+        assertEquals(List.class, result.getData().getClass());
+    }
+
+    @Test
+    void add_shouldSaveCategory() {
+
+        Category category = new Category();
+        category.setCategoryName("Elektronik");
+
+        categoryManager.add(category);
+
+        verify(categoryDao).save(category);
+    }
+}

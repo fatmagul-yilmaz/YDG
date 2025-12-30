@@ -1,0 +1,7 @@
+package com.example.AlisverisSitesi.dataAccess.abstracts;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.AlisverisSitesi.entities.concretes.Category;
+
+public interface CategoryDao extends JpaRepository<Category, Integer> {
+}
