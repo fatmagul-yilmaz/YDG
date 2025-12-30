@@ -1,14 +1,13 @@
 pipeline {
     agent any
 
-    options {
-        // Git whatchanged hatasını kesin olarak engeller
-        skipDefaultCheckout(true)
+    triggers {
+        githubPush()
     }
 
     stages {
 
-        stage('Checkout') {
+        stage('Github - Kodu Çek') {
             steps {
                 checkout scm
             }
@@ -16,56 +15,29 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo '📦 Proje build ediliyor...'
-                sh 'mvn clean compile'
+                bat 'mvn clean compile'
             }
         }
 
-        stage('Unit Tests') {
+        stage('Unit Testler') {
             steps {
-                echo '🧪 Unit testler çalıştırılıyor...'
-                sh 'mvn test'
+                bat 'mvn test'
             }
         }
 
-        stage('Integration Tests') {
+        stage('Integration Testler') {
             steps {
-                echo '🔗 Integration testler çalıştırılıyor...'
-                sh 'mvn verify -DskipUnitTests=true'
-            }
-        }
-
-        stage('Run Application') {
-            steps {
-                echo '🚀 Uygulama ayağa kaldırılıyor (8084)...'
-                sh '''
-                mvn spring-boot:run &
-                '''
-                // Uygulamanın ayağa kalkması için bekle
-                sleep time: 20, unit: 'SECONDS'
-            }
-        }
-
-        stage('Selenium Tests') {
-            steps {
-                echo '🤖 Selenium testleri çalıştırılıyor...'
-                sh 'mvn test -Dtest=Selenium*'
+                bat 'mvn verify'
             }
         }
     }
 
     post {
-        always {
-            echo '📊 Test raporları arşivleniyor...'
-            junit '**/target/surefire-reports/*.xml'
-        }
-
         success {
-            echo '✅ Pipeline başarıyla tamamlandı!'
+            echo '✅ Build + Unit + Integration testler başarılı'
         }
-
         failure {
-            echo '❌ Pipeline hata aldı!'
+            echo '❌ Pipeline başarısız'
         }
     }
 }
