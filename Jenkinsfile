@@ -2,27 +2,27 @@ pipeline {
     agent any
 
     stages {
-
-        stage('Repo Checkout') {
+        stage('Repo Klonla') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/fatmagul-yilmaz/YDG.git'
+                echo 'Repository klonlandı'
             }
         }
 
-        stage('Maven Test') {
+        stage('Maven Build') {
             steps {
-                bat 'mvn clean test'
+                dir('Alisveris-Sitesi---backend-main') {
+                    bat 'mvn clean package'
+                }
             }
         }
     }
 
     post {
         success {
-            echo 'Testler başarıyla çalıştı ✅'
+            echo 'Build başarılı 🎉'
         }
         failure {
-            echo 'Testler başarısız ❌'
+            echo 'Build başarısız ❌'
         }
     }
 }
