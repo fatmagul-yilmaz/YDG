@@ -1,10 +1,25 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
-        stage('Repo Klonla') {
+        stage('Checkout') {
             steps {
-                echo 'Repository klonlandı'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/fatmagul-yilmaz/YDG.git'
+                    ]],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [
+                        [$class: 'CleanBeforeCheckout'],
+                        [$class: 'CloneOption', noTags: true, shallow: false, depth: 0]
+                    ]
+                ])
             }
         }
 
