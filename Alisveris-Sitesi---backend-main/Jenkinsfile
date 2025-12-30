@@ -1,69 +1,71 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven'
-        jdk 'Java17'
+    options {
+        // Git whatchanged hatasını kesin olarak engeller
+        skipDefaultCheckout(true)
     }
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/fatmagul-yilmaz/YDG.git'
+                checkout scm
             }
         }
 
         stage('Build') {
             steps {
+                echo '📦 Proje build ediliyor...'
                 sh 'mvn clean compile'
             }
         }
 
         stage('Unit Tests') {
             steps {
-                sh 'mvn test -DskipITs'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
+                echo '🧪 Unit testler çalıştırılıyor...'
+                sh 'mvn test'
             }
         }
 
         stage('Integration Tests') {
             steps {
-                sh 'mvn test -Dtest=*IntegrationTest'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
+                echo '🔗 Integration testler çalıştırılıyor...'
+                sh 'mvn verify -DskipUnitTests=true'
             }
         }
 
-        stage('Docker Build & Run') {
+        stage('Run Application') {
             steps {
-                sh 'docker-compose up -d --build'
+                echo '🚀 Uygulama ayağa kaldırılıyor (8084)...'
+                sh '''
+                mvn spring-boot:run &
+                '''
+                // Uygulamanın ayağa kalkması için bekle
+                sleep time: 20, unit: 'SECONDS'
             }
         }
 
         stage('Selenium Tests') {
             steps {
-                sh 'mvn test -Dtest=*Test'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
+                echo '🤖 Selenium testleri çalıştırılıyor...'
+                sh 'mvn test -Dtest=Selenium*'
             }
         }
     }
 
     post {
         always {
-            sh 'docker-compose down'
+            echo '📊 Test raporları arşivleniyor...'
+            junit '**/target/surefire-reports/*.xml'
+        }
+
+        success {
+            echo '✅ Pipeline başarıyla tamamlandı!'
+        }
+
+        failure {
+            echo '❌ Pipeline hata aldı!'
         }
     }
 }
