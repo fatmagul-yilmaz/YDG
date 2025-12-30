@@ -1,32 +1,19 @@
 pipeline {
     agent any
 
-    options {
-        skipDefaultCheckout(true)
-    }
-
     stages {
+
         stage('Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/fatmagul-yilmaz/YDG.git'
-                    ]],
-                    doGenerateSubmoduleConfigurations: false,
-                    extensions: [
-                        [$class: 'CleanBeforeCheckout'],
-                        [$class: 'CloneOption', noTags: true, shallow: false, depth: 0]
-                    ]
-                ])
+                git branch: 'main',
+                    url: 'https://github.com/fatmagul-yilmaz/YDG.git'
             }
         }
 
-        stage('Maven Build') {
+        stage('Build with Maven Wrapper') {
             steps {
                 dir('Alisveris-Sitesi---backend-main') {
-                    bat 'mvn clean package'
+                    bat 'mvnw.cmd clean package -DskipTests'
                 }
             }
         }
@@ -34,10 +21,10 @@ pipeline {
 
     post {
         success {
-            echo 'Build başarılı 🎉'
+            echo 'Maven build başarılı 🎉'
         }
         failure {
-            echo 'Build başarısız ❌'
+            echo 'Maven build başarısız ❌'
         }
     }
 }
