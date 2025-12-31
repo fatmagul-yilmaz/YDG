@@ -2,9 +2,11 @@ package com.example.AlisverisSitesi.selenium;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+@Tag("selenium")
 public class BaseTest {
 
     protected WebDriver driver;

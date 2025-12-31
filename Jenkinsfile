@@ -1,14 +1,6 @@
 pipeline {
     agent any
 
-    parameters {
-        booleanParam(
-            name: 'RUN_SELENIUM',
-            defaultValue: false,
-            description: 'Selenium UI testlerini çalıştır'
-        )
-    }
-
     stages {
 
         stage('Checkout') {
@@ -19,18 +11,13 @@ pipeline {
 
         stage('Build + Unit + Integration Tests') {
             steps {
-                echo 'Build, Unit ve Integration testleri çalıştırılıyor...'
-                bat 'mvnw.cmd clean verify -Dskip.selenium=true'
+                bat 'mvn -f Alisveris-Sitesi---backend-main/northwind/pom.xml clean verify -Pci'
             }
         }
 
         stage('Selenium UI Tests') {
-            when {
-                expression { params.RUN_SELENIUM == true }
-            }
             steps {
-                echo 'Selenium testleri çalıştırılıyor...'
-                bat 'mvnw.cmd test -Dselenium=true'
+                bat 'mvn -f Alisveris-Sitesi---backend-main/northwind/pom.xml clean verify -Pselenium'
             }
         }
     }
@@ -40,7 +27,7 @@ pipeline {
             echo 'Pipeline BAŞARILI ✅'
         }
         failure {
-            echo 'Pipeline BAŞARISIZ ❌'
+            echo 'Pipeline HATALI ❌'
         }
     }
 }
