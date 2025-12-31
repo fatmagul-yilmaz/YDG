@@ -1,24 +1,34 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
 
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[url: 'https://github.com/fatmagul-yilmaz/YDG.git']],
+                    changelog: false,
+                    poll: false
+                ])
             }
         }
 
         stage('Build + Unit + Integration Tests') {
             steps {
-                bat 'mvn -f Alisveris-Sitesi---backend-main/northwind/pom.xml clean verify -Pci'
+                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml clean verify -Pci'
             }
         }
 
         stage('Start Backend') {
             steps {
                 bat '''
-                start cmd /c mvn -f Alisveris-Sitesi---backend-main/northwind/pom.xml spring-boot:run
+                start cmd /c mvn -f Alisveris-Sitesi---backend-main/pom.xml spring-boot:run
                 timeout /t 20
                 '''
             }
@@ -26,7 +36,7 @@ pipeline {
 
         stage('Selenium UI Tests') {
             steps {
-                bat 'mvn -f Alisveris-Sitesi---backend-main/northwind/pom.xml test -Pselenium'
+                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml test -Pselenium'
             }
         }
     }
