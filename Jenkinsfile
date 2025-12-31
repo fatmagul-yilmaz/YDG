@@ -1,6 +1,14 @@
 pipeline {
     agent any
 
+    parameters {
+        booleanParam(
+            name: 'RUN_SELENIUM',
+            defaultValue: false,
+            description: 'Selenium UI testlerini çalıştır'
+        )
+    }
+
     stages {
 
         stage('Checkout') {
@@ -11,20 +19,28 @@ pipeline {
 
         stage('Build + Unit + Integration Tests') {
             steps {
-                echo 'Maven build ve testler çalıştırılıyor...'
-                dir('Alisveris-Sitesi---backend-main') {
-                    bat 'mvnw.cmd clean verify'
-                }
+                echo 'Build, Unit ve Integration testleri çalıştırılıyor...'
+                bat 'mvnw.cmd clean verify -Dskip.selenium=true'
+            }
+        }
+
+        stage('Selenium UI Tests') {
+            when {
+                expression { params.RUN_SELENIUM == true }
+            }
+            steps {
+                echo 'Selenium testleri çalıştırılıyor...'
+                bat 'mvnw.cmd test -Dselenium=true'
             }
         }
     }
 
     post {
         success {
-            echo 'Build ve testler BAŞARILI ✅'
+            echo 'Pipeline BAŞARILI ✅'
         }
         failure {
-            echo 'Build veya testlerde HATA ❌'
+            echo 'Pipeline BAŞARISIZ ❌'
         }
     }
 }
