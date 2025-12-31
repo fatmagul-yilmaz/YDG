@@ -1,52 +1,76 @@
 pipeline {
     agent any
 
-    options {
-        skipDefaultCheckout(true)
+    environment {
+        MAVEN_OPTS = "-Xmx1024m"
     }
 
     stages {
 
+        /* =========================
+           CHECKOUT (NO CHANGELOG)
+        ========================== */
         stage('Checkout') {
             steps {
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: '*/main']],
-                    userRemoteConfigs: [[url: 'https://github.com/fatmagul-yilmaz/YDG.git']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/fatmagul-yilmaz/YDG.git'
+                    ]],
                     changelog: false,
                     poll: false
                 ])
             }
         }
 
+        /* =========================
+           BUILD + UNIT + INTEGRATION
+        ========================== */
         stage('Build + Unit + Integration Tests') {
             steps {
-                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml clean verify -Pci'
-            }
-        }
-
-        stage('Start Backend') {
-            steps {
                 bat '''
-                start cmd /c mvn -f Alisveris-Sitesi---backend-main/pom.xml spring-boot:run
-                timeout /t 20
+                cd Alisveris-Sitesi---backend-main
+                mvn clean verify
                 '''
             }
         }
 
+        /* =========================
+           START BACKEND
+        ========================== */
+        stage('Start Backend') {
+            steps {
+                bat '''
+                cd Alisveris-Sitesi---backend-main
+                start /B mvn spring-boot:run
+                ping 127.0.0.1 -n 20 > nul
+                '''
+            }
+        }
+
+        /* =========================
+           SELENIUM UI TESTS
+        ========================== */
         stage('Selenium UI Tests') {
             steps {
-                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml test -Pselenium'
+                bat '''
+                cd Alisveris-Sitesi---backend-main
+                mvn test -Pselenium
+                '''
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline BAŞARILI ✅'
+            echo 'PIPELINE BAŞARILI ✅ FULL GREEN'
         }
         failure {
-            echo 'Pipeline HATALI ❌'
+            echo 'PIPELINE HATALI ❌'
+        }
+        always {
+            echo 'Pipeline tamamlandı'
         }
     }
 }
