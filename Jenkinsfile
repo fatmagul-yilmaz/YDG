@@ -15,9 +15,18 @@ pipeline {
             }
         }
 
+        stage('Start Backend') {
+            steps {
+                bat '''
+                start cmd /c mvn -f Alisveris-Sitesi---backend-main/northwind/pom.xml spring-boot:run
+                timeout /t 20
+                '''
+            }
+        }
+
         stage('Selenium UI Tests') {
             steps {
-                bat 'mvn -f Alisveris-Sitesi---backend-main/northwind/pom.xml clean verify -Pselenium'
+                bat 'mvn -f Alisveris-Sitesi---backend-main/northwind/pom.xml test -Pselenium'
             }
         }
     }

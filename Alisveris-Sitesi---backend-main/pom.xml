@@ -16,31 +16,32 @@
     <groupId>kodlamaio</groupId>
     <artifactId>northwind</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>northwind</name>
 
     <properties>
         <java.version>17</java.version>
-        <skip.selenium>false</skip.selenium>
+        <selenium.version>4.18.1</selenium.version>
     </properties>
 
+    <!-- ================= DEPENDENCIES ================= -->
     <dependencies>
+
         <!-- Selenium -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.18.1</version>
+            <version>${selenium.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- Spring -->
+        <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
         <!-- Validation (SİLİNMEDİ) -->
@@ -63,6 +64,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Swagger -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -70,48 +78,60 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Swagger -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.4.0</version>
-        </dependency>
     </dependencies>
 
-    <!-- SELENIUM PROFİL -->
-    <profiles>
-        <profile>
-            <id>selenium</id>
-            <properties>
-                <skip.selenium>false</skip.selenium>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>ci</id>
-            <properties>
-                <skip.selenium>true</skip.selenium>
-            </properties>
-        </profile>
-    </profiles>
-
+    <!-- ================= BUILD ================= -->
     <build>
         <plugins>
-            <!-- Surefire -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <skipTests>${skip.selenium}</skipTests>
-                </configuration>
-            </plugin>
 
-            <!-- Spring Boot -->
+            <!-- Spring Boot Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
+
+            <!-- SUREFIRE (Unit + Integration) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <!-- Selenium testlerini default'ta çalıştırma -->
+                    <excludedGroups>selenium</excludedGroups>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
+
+    <!-- ================= PROFILES ================= -->
+    <profiles>
+
+        <!-- Selenium Test Profili -->
+        <profile>
+            <id>selenium</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.2.5</version>
+                        <configuration>
+                            <groups>selenium</groups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
 
 </project>
