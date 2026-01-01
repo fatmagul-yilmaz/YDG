@@ -17,7 +17,7 @@ pipeline {
 
         stage('Run System on Docker') {
             steps {
-                bat 'docker-compose up -d --build'
+                bat 'docker-compose -f Alisveris-Sitesi---backend-main/docker-compose.yml up -d --build'
                 bat 'timeout /t 20'
             }
         }
@@ -37,7 +37,7 @@ pipeline {
             echo '❌ PIPELINE HATA VERDİ'
         }
         always {
-            bat 'docker-compose down'
+            bat 'docker-compose -f Alisveris-Sitesi---backend-main/docker-compose.yml down'
         }
     }
 }
