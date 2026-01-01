@@ -1,76 +1,43 @@
 pipeline {
     agent any
 
-    environment {
-        MAVEN_OPTS = "-Xmx1024m"
-    }
-
     stages {
 
-        /* =========================
-           CHECKOUT (NO CHANGELOG)
-        ========================== */
         stage('Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/fatmagul-yilmaz/YDG.git'
-                    ]],
-                    changelog: false,
-                    poll: false
-                ])
+                checkout scm
             }
         }
 
-        /* =========================
-           BUILD + UNIT + INTEGRATION
-        ========================== */
         stage('Build + Unit + Integration Tests') {
             steps {
-                bat '''
-                cd Alisveris-Sitesi---backend-main
-                mvn clean verify
-                '''
+                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml clean verify -Pci'
             }
         }
 
-        /* =========================
-           START BACKEND
-        ========================== */
-        stage('Start Backend') {
+        stage('Run System on Docker') {
             steps {
-                bat '''
-                cd Alisveris-Sitesi---backend-main
-                start /B mvn spring-boot:run
-                ping 127.0.0.1 -n 20 > nul
-                '''
+                bat 'docker-compose up -d --build'
+                bat 'timeout /t 20'
             }
         }
 
-        /* =========================
-           SELENIUM UI TESTS
-        ========================== */
         stage('Selenium UI Tests') {
             steps {
-                bat '''
-                cd Alisveris-Sitesi---backend-main
-                mvn test -Pselenium
-                '''
+                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml test -Pselenium'
             }
         }
     }
 
     post {
         success {
-            echo 'PIPELINE BAŞARILI ✅ FULL GREEN'
+            echo '🎉 PIPELINE TAMAMEN BAŞARILI'
         }
         failure {
-            echo 'PIPELINE HATALI ❌'
+            echo '❌ PIPELINE HATA VERDİ'
         }
         always {
-            echo 'Pipeline tamamlandı'
+            bat 'docker-compose down'
         }
     }
 }
