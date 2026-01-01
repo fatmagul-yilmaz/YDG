@@ -19,19 +19,10 @@
 
     <properties>
         <java.version>17</java.version>
-        <selenium.version>4.18.1</selenium.version>
     </properties>
 
     <!-- ================= DEPENDENCIES ================= -->
     <dependencies>
-
-        <!-- Selenium -->
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>${selenium.version}</version>
-            <scope>test</scope>
-        </dependency>
 
         <!-- Spring Boot -->
         <dependency>
@@ -44,7 +35,7 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Validation (SİLİNMEDİ) -->
+        <!-- Validation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
@@ -78,34 +69,36 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- REST ASSURED (SYSTEM TESTS) -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>5.4.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <!-- ================= BUILD ================= -->
     <build>
         <plugins>
 
-            <!-- Spring Boot Plugin -->
+            <!-- Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
 
-            <!-- SUREFIRE (Unit + Integration) -->
+            <!-- DEFAULT TESTLER (Unit + Integration) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <!-- Selenium testlerini default'ta çalıştırma -->
-                    <excludedGroups>selenium</excludedGroups>
+                    <!-- systemtests default çalışmaz -->
+                    <excludes>
+                        <exclude>**/systemtests/**/*Test.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 
@@ -115,9 +108,9 @@
     <!-- ================= PROFILES ================= -->
     <profiles>
 
-        <!-- Selenium Test Profili -->
+        <!-- SYSTEM TEST PROFILE -->
         <profile>
-            <id>selenium</id>
+            <id>system-tests</id>
             <build>
                 <plugins>
                     <plugin>
@@ -125,7 +118,9 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>3.2.5</version>
                         <configuration>
-                            <groups>selenium</groups>
+                            <includes>
+                                <include>**/systemtests/**/*Test.java</include>
+                            </includes>
                         </configuration>
                     </plugin>
                 </plugins>

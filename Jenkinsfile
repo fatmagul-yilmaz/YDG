@@ -11,37 +11,33 @@ pipeline {
 
         stage('Build + Unit + Integration Tests') {
             steps {
-                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml clean verify'
+                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml clean test'
             }
         }
 
         stage('Run System on Docker') {
             steps {
-                dir('Alisveris-Sitesi---backend-main') {
-                    bat 'docker-compose up -d --build'
-                }
+                bat 'docker-compose up -d --build'
                 bat 'timeout /t 20'
             }
         }
 
-        stage('Selenium UI Tests') {
+        stage('System Tests (RestAssured)') {
             steps {
-                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml test -Pselenium'
+                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml test -Psystem-tests'
             }
         }
     }
 
     post {
-        always {
-            dir('Alisveris-Sitesi---backend-main') {
-                bat 'docker-compose down'
-            }
-        }
         success {
             echo '🎉 PIPELINE TAMAMEN BAŞARILI'
         }
         failure {
             echo '❌ PIPELINE HATA VERDİ'
+        }
+        always {
+            bat 'docker-compose down'
         }
     }
 }
