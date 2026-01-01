@@ -11,13 +11,15 @@ pipeline {
 
         stage('Build + Unit + Integration Tests') {
             steps {
-                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml clean verify -Pci'
+                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml clean verify'
             }
         }
 
         stage('Run System on Docker') {
             steps {
-                bat 'docker-compose -f Alisveris-Sitesi---backend-main/docker-compose.yml up -d --build'
+                dir('Alisveris-Sitesi---backend-main') {
+                    bat 'docker-compose up -d --build'
+                }
                 bat 'timeout /t 20'
             }
         }
@@ -30,14 +32,16 @@ pipeline {
     }
 
     post {
+        always {
+            dir('Alisveris-Sitesi---backend-main') {
+                bat 'docker-compose down'
+            }
+        }
         success {
             echo '🎉 PIPELINE TAMAMEN BAŞARILI'
         }
         failure {
             echo '❌ PIPELINE HATA VERDİ'
-        }
-        always {
-            bat 'docker-compose -f Alisveris-Sitesi---backend-main/docker-compose.yml down'
         }
     }
 }
