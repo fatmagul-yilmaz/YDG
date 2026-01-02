@@ -10,19 +10,25 @@ public class HealthCheckIT {
 
     @BeforeEach
     void setup() {
-        // RestAssured'a varsayılan 8080 yerine 8084'ü kullanmasını söylüyoruz
+        // RestAssured yapılandırması
         RestAssured.port = 8084;
         RestAssured.baseURI = "http://localhost";
     }
 
     @Test
-    void backend_should_be_running() {
+    void backend_should_be_running() throws InterruptedException {
+        // Test başlamadan önce Docker'daki uygulamanın tamamen ayağa kalkması için 15 saniye bekler
+        System.out.println("Uygulamanın hazır olması bekleniyor (15 saniye)...");
+        Thread.sleep(15000);
+
         RestAssured
             .given()
             .when()
-            .get("/actuator/health")
+                .get("/actuator/health")
             .then()
-            .statusCode(200) // Artık 8084/actuator/health'e gideceği için 200 dönecek
-            .body("status", equalTo("UP"));
+                .statusCode(200)
+                .body("status", equalTo("UP"));
+        
+        System.out.println("Sağlık kontrolü başarılı!");
     }
 }
