@@ -12,7 +12,7 @@ public class HealthCheckIT {
         RestAssured
             .given()
             .when()
-            .get("http://localhost:8084/actuator/health")
+            .get("/actuator/health")
             .then()
             .statusCode(200)
             .body("status", equalTo("UP"));

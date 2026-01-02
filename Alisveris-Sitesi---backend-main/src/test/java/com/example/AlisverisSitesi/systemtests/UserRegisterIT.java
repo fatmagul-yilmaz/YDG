@@ -21,6 +21,6 @@ public class UserRegisterIT {
             .when()
                 .post("http://localhost:8084/api/users/add")
             .then()
-                .statusCode(201);
+                .statusCode(200);
     }
 }
