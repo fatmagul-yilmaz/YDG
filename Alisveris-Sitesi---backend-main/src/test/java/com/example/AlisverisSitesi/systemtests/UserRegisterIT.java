@@ -3,7 +3,7 @@ package com.example.AlisverisSitesi.systemtests;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 
-public class UserRegisterTest {
+public class UserRegisterIT {
 
     @Test
     void user_can_register_successfully() {

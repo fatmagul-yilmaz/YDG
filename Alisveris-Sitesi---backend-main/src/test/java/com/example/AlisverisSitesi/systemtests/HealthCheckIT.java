@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 
-public class HealthCheckTest {
+public class HealthCheckIT {
 
     @Test
     void backend_should_be_running() {

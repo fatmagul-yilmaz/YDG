@@ -3,7 +3,7 @@ package com.example.AlisverisSitesi.systemtests;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 
-public class ProductListTest {
+public class ProductListIT {
 
     @Test
     void product_list_should_be_accessible() {
