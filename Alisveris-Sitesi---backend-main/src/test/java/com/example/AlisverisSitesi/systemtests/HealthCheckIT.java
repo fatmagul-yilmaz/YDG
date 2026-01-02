@@ -9,6 +9,10 @@ public class HealthCheckIT {
 
     @Test
     void backend_should_be_running() {
+
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = 8084;
+
         RestAssured
             .given()
             .when()
