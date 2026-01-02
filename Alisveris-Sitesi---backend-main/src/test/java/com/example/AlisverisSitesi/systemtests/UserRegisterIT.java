@@ -19,7 +19,7 @@ public class UserRegisterIT {
                 .contentType("application/json")
                 .body(body)
             .when()
-                .post("http://localhost:8084/api/auth/register")
+                .post("http://localhost:8084/api/users/add")
             .then()
                 .statusCode(201);
     }

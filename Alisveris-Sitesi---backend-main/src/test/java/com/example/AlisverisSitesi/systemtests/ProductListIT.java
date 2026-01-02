@@ -10,7 +10,7 @@ public class ProductListIT {
         RestAssured
             .given()
             .when()
-            .get("http://localhost:8084/api/products")
+            .get("http://localhost:8084/api/products/getAll")
             .then()
             .statusCode(200);
     }

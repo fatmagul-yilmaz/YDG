@@ -35,7 +35,9 @@ public UsersController(UserService userService) {
   
   @PostMapping (value = "/add")
   public ResponseEntity<?> add( @Valid @RequestBody User user) {
-	   return  ResponseEntity.ok(this.userService.add(user)) ;
+	  return ResponseEntity.status(HttpStatus.CREATED)
+              .body(this.userService.add(user));
+
   }
 	
   //global hata denetleyicmiz
