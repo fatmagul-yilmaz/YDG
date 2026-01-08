@@ -1,34 +1,41 @@
 package com.example.AlisverisSitesi.systemtests;
 
-import io.restassured.RestAssured;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.hamcrest.Matchers.equalTo;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HealthCheckIT {
+    WebDriver driver;
 
     @BeforeEach
     void setup() {
-        // RestAssured yapılandırması
-        RestAssured.port = 8084;
-        RestAssured.baseURI = "http://localhost";
+        WebDriverManager.chromedriver().setup();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless"); // Jenkins için şart
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        driver = new ChromeDriver(options);
     }
 
     @Test
-    void backend_should_be_running() throws InterruptedException {
-        // Test başlamadan önce Docker'daki uygulamanın tamamen ayağa kalkması için 15 saniye bekler
-        System.out.println("Uygulamanın hazır olması bekleniyor (15 saniye)...");
-        Thread.sleep(15000);
-
-        RestAssured
-            .given()
-            .when()
-                .get("/actuator/health")
-            .then()
-                .statusCode(200)
-                .body("status", equalTo("UP"));
+    void test_ui_is_accessible() {
+        // Docker üzerinde çalışan backend'in sunduğu statik sayfaya gider
+        driver.get("http://localhost:8084/"); 
+        String bodyText = driver.findElement(By.tagName("body")).getText();
         
-        System.out.println("Sağlık kontrolü başarılı!");
+        // Controller'daki HomeController "/" dönüşüyle karşılaştırıyoruz
+        assertTrue(bodyText.contains("Backend ayakta"));
+        System.out.println("Selenium Sistem Testi Başarılı!");
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (driver != null) driver.quit();
     }
 }

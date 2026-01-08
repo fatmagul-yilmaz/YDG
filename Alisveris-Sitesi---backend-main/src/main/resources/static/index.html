@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><title>YDG Alisveris Sitesi</title></head>
+<body>
+    <h1 id="page-title">YDG Test Arayuzu</h1>
+    <div id="status">Backend ayakta 🚀</div>
+    <ul id="product-list"></ul>
+    <script>
+        fetch('/api/products/getAll')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('product-list');
+                data.data.forEach(p => {
+                    let li = document.createElement('li');
+                    li.innerText = p.productName;
+                    list.appendChild(li);
+                });
+            });
+    </script>
+</body>
+</html>

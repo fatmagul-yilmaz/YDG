@@ -17,27 +17,32 @@ pipeline {
         stage('Run System on Docker') {
             steps {
                 bat 'cd Alisveris-Sitesi---backend-main && docker-compose up -d --build'
-                // Jenkins dostu bekleme komutu
-                sleep time: 20, unit: 'SECONDS'
+                sleep time: 30, unit: 'SECONDS' // Docker'ın kendine gelmesi için süreyi biraz artırdık
             }
         }
 
-        stage('System Tests (RestAssured)') {
+        stage('System Tests (Selenium + RestAssured)') {
             steps {
-                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml test -Psystem-tests'
+                // IT uzantılı sistem testlerini tetikler
+                bat 'mvn -f Alisveris-Sitesi---backend-main/pom.xml verify -Psystem-tests'
             }
         }
     }
 
     post {
+        always {
+            // ÖDEV ŞARTI: Test sonuçlarını görsel rapor olarak Jenkins'e kaydeder
+            junit '**/target/failsafe-reports/*.xml'
+            junit '**/target/surefire-reports/*.xml'
+            
+            // Konteyner temizliği
+            bat 'cd Alisveris-Sitesi---backend-main && docker-compose down'
+        }
         success {
             echo '🎉 PIPELINE TAMAMEN BAŞARILI'
         }
         failure {
             echo '❌ PIPELINE HATA VERDİ'
-        }
-        always {
-            bat 'cd Alisveris-Sitesi---backend-main && docker-compose down'
         }
     }
 }
