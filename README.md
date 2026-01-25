@@ -55,6 +55,9 @@ Proje, Katmanlı Mimari (N-Tier Architecture) yaklaşımı ile geliştirilmişti
 
 ## 📊 Otomatik Test Sonuçları
 
+<img width="1568" height="463" alt="Ekran görüntüsü 2026-01-25 183812" src="https://github.com/user-attachments/assets/e7e0c822-b800-44ef-a252-e0474051abea" />
+
+
 - 🧪 Unit Testleri: 5 / 5 ✅
 - 🔗 Integration Testleri: 3 / 3 ✅
 - 🌐 System / API Testleri: 3 / 3 ✅
