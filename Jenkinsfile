@@ -31,7 +31,6 @@ pipeline {
 
     post {
         always {
-            // ÖDEV ŞARTI: Test sonuçlarını görsel rapor olarak Jenkins'e kaydeder
             junit '**/target/failsafe-reports/*.xml'
             junit '**/target/surefire-reports/*.xml'
             

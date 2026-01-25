@@ -19,7 +19,6 @@ services:
     depends_on:
       - postgres
     environment:
-      # Docker içindeyken localhost yerine postgres servisine gitmesini sağlıyoruz
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/AlisverisSitesi
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 12345
